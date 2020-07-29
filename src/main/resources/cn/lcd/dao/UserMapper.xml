@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+  mybatis的第二种事件方式
+    xml + 接口的方式
+      特点：xml中的namespace必须为接口的全路径
+        xml中的每个节点的id必须为接口的方法名
+-->
+<mapper namespace="cn.lcd.dao.IUserDao">
+
+
+    <select id="getAllUsers" resultType="user">
+        select * from user
+    </select>
+
+    <select id="getUserById" resultType="user">
+        select * from user
+        where id = #{id}
+    </select>
+
+    <select id="getLastId" resultType="int">
+        SELECT id FROM user
+        ORDER BY id DESC LIMIT 1
+    </select>
+
+    <select id="getCount" resultType="int">
+        select count(1) from user
+    </select>
+
+    <delete id="removeUser" parameterType="int">
+        delete from user
+        where id = #{id}
+    </delete>
+
+    <update id="updateUser" parameterType="user">
+        update user
+        set username = #{username}, nickname = #{nickname}, address = #{address}, money = #{money}, state = #{state}
+        where id = #{id}
+    </update>
+
+    <insert id="saveUser" parameterType="user">
+        insert into user
+        values (#{id} , #{username} , #{password} , #{nickname} , #{address} , #{money} , #{state} )
+    </insert>
+
+</mapper>

@@ -1,0 +1,77 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans.xsd
+							http://www.springframework.org/schema/context
+							http://www.springframework.org/schema/context/spring-context.xsd
+							 http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+
+    <context:property-placeholder location="classpath:db.properties"/>
+
+    <!--
+        医用数据库的配置文件properties
+    -->
+    <bean class="com.alibaba.druid.pool.DruidDataSource" id="ds">
+        <property name="url" value="${url}"/>
+        <property name="driverClassName" value="${driver}"/>
+        <property name="username" value="${user}"/>
+        <property name="password" value="${pass}"/>
+    </bean>
+
+
+    <!--配置SqlSessionFactory-->
+    <bean class="org.mybatis.spring.SqlSessionFactoryBean" id="sf">
+        <!--
+            为dao-mapper文件信息，如果映射文件和dao接口同包且同名，
+            也就是在mapper文件中resultType可以只写User
+        -->
+        <property name="typeAliasesPackage" value="cn.lcd.pojo"/>
+        <property name="mapperLocations" value="classpath:cn/lcd/dao/*Mapper.xml"/>
+        <property name="dataSource" ref="ds"/>
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+    </bean>
+
+    <!--
+        配置映射扫描，分别设置dao包扫描和SqlSessionFactory的指定
+    -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="cn.lcd.dao"/>
+        <property name="sqlSessionFactoryBeanName" value="sf"/>
+    </bean>
+
+    <!--
+        配置事务管理器，其中以来DataSource。借以获得连接，进而控制事务逻辑
+    -->
+    <bean id="dtx" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="ds"/>
+    </bean>
+
+    <!--声明式事务的实现
+       以这些关键字开头的方法分别将被设置事务的隔离级别和出错后的操作
+    -->
+    <tx:advice transaction-manager="dtx" id="tx">
+        <!--事务属性-->
+        <tx:attributes>
+            <!--
+                在设计的时候，可以给查找设计成...Users   其他设计成...User
+                这样在写得时候就可以写name=*Users
+                和name=*User
+            -->
+            <tx:method name="save*" propagation="REQUIRED" isolation="DEFAULT" rollback-for="Exception"/>
+            <tx:method name="insert*" propagation="REQUIRED" isolation="DEFAULT" rollback-for="Exception"/>
+            <tx:method name="update*" propagation="REQUIRED" isolation="DEFAULT" rollback-for="Exception"/>
+            <tx:method name="delete*" propagation="REQUIRED" isolation="DEFAULT" rollback-for="Exception"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <!--
+        配置AOP，事务的配置
+    -->
+    <aop:config>
+        <aop:pointcut id="mpt" expression="execution(* cn.lcd.service.*.*(..))"/>
+        <aop:advisor advice-ref="tx" pointcut-ref="mpt" />
+    </aop:config>
+</beans>
