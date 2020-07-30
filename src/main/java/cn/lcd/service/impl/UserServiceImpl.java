@@ -27,13 +27,18 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public boolean saveUser(User user) {
-        return dao.saveUser(user)>0;
+    public boolean insertUser(User user) {
+        return dao.insertUser(user)>0;
     }
 
     @Override
     public boolean removeUser(int id) {
         return dao.removeUser(id)>0;
+    }
+
+    @Override
+    public boolean deleteUsersById(int[] ids) {
+        return dao.deleteUsersById(ids);
     }
 
     @Override

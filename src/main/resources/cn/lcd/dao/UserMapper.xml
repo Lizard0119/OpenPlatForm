@@ -41,7 +41,7 @@
         where id = #{id}
     </update>
 
-    <insert id="saveUser" parameterType="user">
+    <insert id="insertUser" >
         insert into user
         values (#{id} , #{username} , #{password} , #{nickname} , #{address} , #{money} , #{state} )
     </insert>

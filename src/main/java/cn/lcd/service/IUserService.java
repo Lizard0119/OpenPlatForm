@@ -12,10 +12,13 @@ public interface IUserService {
     User getUserById(int id);
 
     /*添加用户*/
-    boolean saveUser(User user);
+    boolean insertUser(User user);
 
     /*删除用户*/
     boolean removeUser(int id);
+
+    /*根据id数组进行批删除*/
+    boolean deleteUsersById(int[] ids);
 
     /*更新用户*/
     boolean updateUser(User user);

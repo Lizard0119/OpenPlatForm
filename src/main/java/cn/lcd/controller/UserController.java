@@ -4,9 +4,8 @@ package cn.lcd.controller;
 import cn.lcd.pojo.User;
 import cn.lcd.service.IUserService;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
@@ -21,15 +20,6 @@ public class UserController {
     @Resource
 //    @Autowired   基于类型，自动注入
     private IUserService ser;
-    /*基于名称，自动注入*/
-//
-//    @GetMapping("/Users")
-//    @ResponseBody
-//    public ModelAndView getAllUsers(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "5") int limit) {
-//        List<User> list = ser.getAllUsers(page, limit);
-//        return new ModelAndView("index", "list", list);
-//    }
-
     @GetMapping("/UserLayUI")
     @ResponseBody
     public Map<String, Object> getLayUIData(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "5") int limit) {
@@ -60,12 +50,54 @@ public class UserController {
         map1.put("count", ser.getCount());
         map1.put("data", list);
         return map1;
-
     }
-
 
     @GetMapping("/saveUser")
     public String saveUser() {
         return "saveUser";
     }
+
+    @GetMapping("/getUserById/{id}")
+    @ResponseBody
+    public User getUserById(@PathVariable int id) {
+        return ser.getUserById(id);
+    }
+
+    @GetMapping("/removeUser/{id}")
+    @ResponseBody
+    public String removeUser(@PathVariable int id) {
+        if (ser.removeUser(id)) {
+            return  "success";
+        }
+        return "failed";
+    }
+
+    @PostMapping("/insertUser")
+    @ResponseBody
+    public String insertUser(User user) {
+        if (ser.insertUser(user)) {
+            return "success";
+        }
+        return "failed";
+    }
+
+    @GetMapping("/insert")
+    public String aaa() {
+        return "insertUser";
+    }
+
+    @PostMapping("/update")
+    @ResponseBody
+    public String update(User user) {
+        if (ser.updateUser(user)) {
+            return "success";
+        }
+        return "failed";
+    }
+
+    @GetMapping("/updateUser/{id}")
+    public String updateUser() {
+        return "updateUser";
+    }
+
 }
