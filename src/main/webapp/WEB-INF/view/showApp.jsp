@@ -2,7 +2,10 @@
 <html>
 <head>
     <title>Title</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/layui/css/layui.css">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/layui/css/layui.css"  media="all">
     <script src="${pageContext.request.contextPath}/layui/layui.js"></script>
     <style>
         body {
@@ -43,11 +46,11 @@
             , toolbar: 'default'
             , id: 'testReload'
             , page: true
-            , url: 'UserLayUI' //获取数据
+            , url: 'AppLayUI' //获取数据
             , totalRow: true //开启合计行
             , page: {
-                limit: 8//每页显示8条
-                , limits: [2,4,6,8,10,15,20] //可选每页条数
+                limit: 5//每页显示5条
+                , limits: [1, 2, 3, 4, 5, 6] //可选每页条数
                 , first: '首页' //首页显示文字，默认显示页号
                 , last: '尾页'
                 , theme: '#FF8422'
@@ -60,11 +63,14 @@
                 {type: 'checkbox'}
                 // {checkbox: true, fixed: true}
                 , {field: 'id', title: 'ID', sort: true}
-                , {field: 'username', title: '用户名', sort: true}
-                , {field: 'nickname', title: '公司名称'} //没定义宽度则占满剩余所有宽度，都不定义则所有列均分
-                , {field: 'address', title: '地址'}
-                , {field: "money", title: "余额", sort: true}
-                , {field: "state", title: "状态"}
+                , {field: 'corpName',title: '公司'}
+                , {field: 'appName', title: '应用名称'} //没定义宽度则占满剩余所有宽度，都不定义则所有列均分
+                , {field: 'appKey', title: '唯一标识Key', sort: true}
+                , {field: "appSecret", title: "签名秘钥", sort: true}
+                , {field: "redirectUrl", title: "回调URL"}
+                , {field: "linit",title: "免费限制次数", sort: true}
+                , {field: "description", title: "应用介绍"}
+                , {field: "state", title: "状态" }
                 , {field: "right", title: "操作", toolbar: '#barDemo'}
             ]]
         });
@@ -108,9 +114,9 @@
                         shade: 0.5,
                         area: ['540px', '78%'],
                         shadeClose: false,
-                        content: 'insert', //iframe的url
+                        content: 'insertA', //iframe的url
                         end: function () {
-                            window.location.href = 'saveUser', target = 'content';
+                            window.location.href = 'showApp', target = 'content';
                         }
                     })
                     break;
@@ -129,7 +135,7 @@
                     } else {
                         layer.msg('删除成功', {time: 1800}, function (index) {
                             layer.close(index);
-                            window.location.href = 'saveUser', target = 'content';
+                            window.location.href = 'showApp', target = 'content';
                         });
                     }
                     break;
@@ -151,16 +157,16 @@
                     shade: 0.8,
                     area: ['380px', '42%'],
                     shadeClose: false,
-                    content: 'getUserById/' + data.id //iframe的url
+                    content: 'getAppById/' + data.id //iframe的url
                 })
             } else if (layEvent === 'del') {
                 // console.log(data.id);
                 layer.confirm('是否删除用户' + data.nickname, function (index) {
-                    $.get("removeUser/" + data.id, function (res) {
+                    $.get("removeApp/" + data.id, function (res) {
                         if (res == "success") {
                             layer.msg('删除成功', {time: 1800}, function () {
                                 layer.close(index);
-                                window.location.href = 'saveUser', target = 'content';
+                                window.location.href = 'showApp', target = 'content';
                             });
                         } else {
                             layer.msg('删除失败', {time: 1800}, function () {
@@ -181,67 +187,14 @@
                     shade: 0.5,
                     area: ['540px', '78%'],
                     shadeClose: false,
-                    content: 'updateUser/' + data.id, //iframe的url
+                    content: 'updateApp/' + data.id, //iframe的url
                     end: function () {
-                        window.location.href = 'saveUser', target = 'content';
+                        window.location.href = 'showApp', target = 'content';
                     }
                 })
             }
         });
     });
-
-
-    // //监听行单击事件（双击事件为：rowDouble）
-    // table.on('row(test)', function(obj){
-    //     var data = obj.data;
-    //
-    //     layer.alert(JSON.stringify(data), {
-    //         title: '当前行数据：'
-    //     });
-    //
-    //     //标注选中样式
-    //     obj.tr.addClass('layui-table-click').siblings().removeClass('layui-table-click');
-    // });
-
-
-    // // 事件注册   // //分页
-    // laypage.render({
-    //     elem: 'pageDemo' //分页容器的id
-    //     ,count: 100 //总页数
-    //     ,skin: '#1E9FFF' //自定义选中色值
-    //     //,skip: true //开启跳页
-    //     ,jump: function(obj, first){
-    //         if(!first){
-    //             layer.msg('第'+ obj.curr +'页', {offset: 'b'});
-    //         }
-    //     }
-    // });
-
-    // table.on('tool(test)', function (obj) {
-    //     var data = obj.data; //获得当前行数据
-    //     //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
-    //     var layEvent = obj.event;
-    //     var tr = obj.tr; //获得当前行 tr 的 DOM 对象（如果有的话）
-    //     if (layEvent === 'del') { //删除
-    //         layer.confirm('真的删除行么', function (index) {
-    //             // 向服务端发送删除请求+
-    //             // 此处可以发送ajax
-    //             obj.del(); //删除对应行（tr）的DOM结构
-    //
-    //             layer.close(index);
-    //         });
-    //     } else if (layEvent === 'edit') { //编辑
-    //         // 向服务端发送更新请求
-    //         // 同步更新缓存对应的值
-    //         obj.update({
-    //             username: 'shine001',
-    //             city: '北京',
-    //             sex: '女',
-    //             score: 99
-    //         });
-    //     }
-    // });
-    // });
 </script>
 
 </body>

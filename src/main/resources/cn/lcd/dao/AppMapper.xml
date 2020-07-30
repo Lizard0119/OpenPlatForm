@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+  mybatis的第二种事件方式
+    xml + 接口的方式
+      特点：xml中的namespace必须为接口的全路径
+        xml中的每个节点的id必须为接口的方法名
+-->
+<mapper namespace="cn.lcd.dao.IAppDao">
+
+
+    <select id="getAllApps" resultType="app">
+        select * from app
+    </select>
+
+    <select id="getAppById" resultType="app">
+        select * from app
+        where id = #{id}
+    </select>
+
+    <select id="getLastId" resultType="int">
+        SELECT id FROM app
+        ORDER BY id DESC LIMIT 1
+    </select>
+
+    <select id="getCount" resultType="int">
+        select count(1) from app
+    </select>
+
+    <delete id="removeApp" parameterType="int">
+        delete from app
+        where id = #{id}
+    </delete>
+
+    <update id="updateApp" parameterType="app">
+        update app
+        set corpName = #{corpName}, appName = #{appName}, appKey = #{appKey}, appSecret = #{appSecret}, linit = #{linit} , description = #{description} , cusId = #{cusId} , state = #{state}
+        where id = #{id}
+    </update>
+
+    <insert id="insertApp" >
+        insert into app ( corpName, appName, appKey, appSecret, redirectUrl, linit, description, cusId, state)
+        values (#{corpName} , #{appName} , #{appKey} , #{appSecret} , #{redirectUrl} , #{linit} , #{description} , #{cusId} , #{state})
+    </insert>
+
+</mapper>
